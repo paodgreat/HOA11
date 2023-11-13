@@ -1,0 +1,39 @@
+---
+
+- hosts: all
+  become: true
+  pre_tasks:
+
+  - name: Install Updates (Ubuntu)
+    tags: update
+    apt:
+      upgrade: dist
+      update_cache: yes
+    when: ansible_distribution == "Ubuntu"
+
+- hosts: remote_servers
+  become: true
+  tasks:
+
+  - name: Install Docker Package
+    tags: docker
+    apt:
+      name: docker.io
+      state: latest
+    when: ansible_distribution == "Ubuntu"
+      
+  - name: Build Apache2 Using Docker
+    docker_image: 
+      name: myapache:1.0
+      source: build
+      build:
+      state: present
+  
+  - name: Build Mariadb Using Docker
+    docker_image:
+      name: mymariadb:1.0
+      source: build
+      build:
+      state: present
+  
+   
